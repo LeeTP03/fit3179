@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+</head>
+<body>
+  <div id="vis"/>
+  <script>
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "COVID-19 Cases per Country (13 Oct 2020)",
+  "params": [
+    {
+      "name": "Year",
+      "value": 1970,
+      "bind": {
+        "input": "range",
+        "min": 1970,
+        "max": 2022,
+        "step": 1,
+        "name": "Year: "
+      }
+    },
+    {
+      "name": "State_Selection",
+      "bind": {
+        "input": "select",
+        "options": [
+          "null",
+          "Johor",
+          "Kedah",
+          "Kelantan",
+          "Melaka",
+          "Negeri Sembilan",
+          "Pahang",
+          "Perak",
+          "Perlis",
+          "Pulau Pinang",
+          "Sabah",
+          "Sarawak",
+          "Selangor",
+          "Terengganu",
+          "Wilayah Persekutuan"
+        ],
+        "labels": [
+          "Show All",
+          "Johor",
+          "Kedah",
+          "Kelantan",
+          "Melaka",
+          "Negeri Sembilan",
+          "Pahang",
+          "Perak",
+          "Perlis",
+          "Pulau Pinang",
+          "Sabah",
+          "Sarawak",
+          "Selangor",
+          "Terengganu",
+          "Wilayah Persekutuan"
+        ],
+        "name": "State: "
+      }
+    }
+  ],
+  "vconcat": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/LeeTP03/fit3179/refs/heads/main/hh_income.csv"
+      },
+      "transform": [{"filter": "year(datum.date) > Year"}],
+      "selection": {
+        "date_filter": {"type": "interval", "field": "date", "encodings": ["x"]}
+      },
+      "mark": "line",
+      "encoding": {
+        "x": {"field": "date", "type": "temporal", "title": "Date"},
+        "y": {
+          "field": "income_mean",
+          "type": "quantitative",
+          "title": "Income Mean"
+        },
+        "tooltip": [
+          {"field": "date", "type": "temporal", "title": "Year"},
+          {
+            "field": "income_mean",
+            "type": "quantitative",
+            "title": "Income Mean"
+          },
+          {
+            "field": "income_median",
+            "type": "quantitative",
+            "title": "Income Median"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/LeeTP03/fit3179/refs/heads/main/hh_income_district.csv"
+      },
+      "mark": "line",
+      "transform": [
+        {"filter": "State_Selection == null || datum.state == State_Selection"}
+      ],
+      "encoding": {
+        "x": {"field": "date", "type": "temporal", "title": "Date"},
+        "y": {
+          "field": "income_mean",
+          "type": "quantitative",
+          "title": "Mean Income"
+        },
+        "color": {"field": "district", "type": "nominal", "title": "District"},
+        "tooltip": [
+          {"field": "date", "type": "temporal", "title": "Date"},
+          {
+            "field": "income_mean",
+            "type": "quantitative",
+            "title": "Mean Income"
+          },
+          {
+            "field": "income_median",
+            "type": "quantitative",
+            "title": "Median Income"
+          },
+          {"field": "state", "type": "nominal", "title": "State"}
+        ]
+      }
+    }
+  ],
+  "config": {}
+};
+    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+  </script>
+</body>
+</html>
